@@ -2,6 +2,8 @@
 
 A Model Context Protocol server that provides web content fetching capabilities. This server enables LLMs to retrieve and process content from web pages, converting HTML to markdown for easier consumption.
 
+**This fork disables robots.txt checking by default**, allowing unrestricted domain fetching. You can enable robots.txt compliance by adding the `--respect-robots-txt` flag.
+
 The fetch tool will truncate the response, but by using the `start_index` argument, you can specify where to start the content extraction. This lets models read a webpage in chunks, until they find the information they need.
 
 ### Available Tools
@@ -43,6 +45,26 @@ python -m mcp_server_fetch
 ```
 
 ## Configuration
+
+### Quick Setup (Recommended)
+
+Use the Claude CLI to add this server globally:
+
+```bash
+claude mcp add-json --scope user fetch '{
+  "command": "uvx",
+  "args": [
+    "--from",
+    "git+https://github.com/cexll/mcp-server-fetch.git",
+    "mcp-server-fetch"
+  ]
+}'
+```
+
+Verify installation:
+```bash
+claude mcp list
+```
 
 ### Configure for Claude.app
 
@@ -89,9 +111,20 @@ Add to your Claude settings:
 
 ### Customization - robots.txt
 
-By default, the server will obey a websites robots.txt file if the request came from the model (via a tool), but not if
-the request was user initiated (via a prompt). This can be disabled by adding the argument `--ignore-robots-txt` to the
-`args` list in the configuration.
+**This fork ignores robots.txt by default**, allowing unrestricted fetching of any domain. If you want to respect robots.txt restrictions, add the `--respect-robots-txt` flag to the `args` list in the configuration.
+
+Example:
+```bash
+claude mcp add-json --scope user fetch '{
+  "command": "uvx",
+  "args": [
+    "--from",
+    "git+https://github.com/cexll/mcp-server-fetch.git",
+    "mcp-server-fetch",
+    "--respect-robots-txt"
+  ]
+}'
+```
 
 ### Customization - User-agent
 
@@ -107,9 +140,35 @@ ModelContextProtocol/1.0 (User-Specified; +https://github.com/modelcontextprotoc
 
 This can be customized by adding the argument `--user-agent=YourUserAgent` to the `args` list in the configuration.
 
+Example:
+```bash
+claude mcp add-json --scope user fetch '{
+  "command": "uvx",
+  "args": [
+    "--from",
+    "git+https://github.com/cexll/mcp-server-fetch.git",
+    "mcp-server-fetch",
+    "--user-agent=MyBot/1.0"
+  ]
+}'
+```
+
 ### Customization - Proxy
 
 The server can be configured to use a proxy by using the `--proxy-url` argument.
+
+Example:
+```bash
+claude mcp add-json --scope user fetch '{
+  "command": "uvx",
+  "args": [
+    "--from",
+    "git+https://github.com/cexll/mcp-server-fetch.git",
+    "mcp-server-fetch",
+    "--proxy-url=http://proxy.example.com:8080"
+  ]
+}'
+```
 
 ## Debugging
 
@@ -130,8 +189,10 @@ npx @modelcontextprotocol/inspector uv run mcp-server-fetch
 
 We encourage contributions to help expand and improve mcp-server-fetch. Whether you want to add new tools, enhance existing functionality, or improve documentation, your input is valuable.
 
-For examples of other MCP servers and implementation patterns, see:
-https://github.com/modelcontextprotocol/servers
+This is a fork of the official MCP fetch server with robots.txt checking disabled by default.
+
+- **This fork**: https://github.com/cexll/mcp-server-fetch
+- **Upstream**: https://github.com/modelcontextprotocol/servers/tree/main/src/fetch
 
 Pull requests are welcome! Feel free to contribute new ideas, bug fixes, or enhancements to make mcp-server-fetch even more powerful and useful.
 
